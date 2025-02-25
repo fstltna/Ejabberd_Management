@@ -11,30 +11,30 @@ use Number::Bytes::Human qw(format_bytes parse_bytes);
 
 # Commands
 my $FileEditor = "/bin/nano";
-my $InitDName = "/home/hotlineuser/bin/hotline";
-my $HOTLINEDIR = "/home/hotlineuser/HotlineFiles";
-my $BackupCommand = "/home/hotlineuser/HotlineBackup/hotlinebackup.pl -snapshot";
+my $InitDName = "/opt/ejabberd-24.12/bin/ejabberdctl";
+my $EJCONF = "/opt/ejabberd/conf";
+my $BackupCommand = "/root/ejabberd-backup/ejabberdbackup.pl -snapshot";
 my $PagerCommand = "/usr/bin/less";
 my $UpdateCommand = "/usr/bin/git pull";
-my $HMCDir = "/home/hotlineuser/HotlineManagement";
-my $DownloadEmail = "$HMCDir/DownloadedFiles";
-my $BackupToolDir = "/home/hotlineuser/HotlineBackup";
-my $StartupDir = "/home/hotlineuser/HotlineStartup";
+my $EJMCDir = "/root/HotlineManagement";
+#my $DownloadEmail = "$EJMCDir/DownloadedFiles";
+my $BackupToolDir = "/root/ejabberd-backup";
+#my $StartupDir = "/root/HotlineStartup";
 
 my $DEBUG_MODE = "off";
 
 # Data Files
-my $AgreementTXT = "$HOTLINEDIR/Agreement.txt";
-my $ConfigYaml = "$HOTLINEDIR/config.yaml";
-my $MessageBoardTXT = "$HOTLINEDIR/MessageBoard.txt";
+my $AgreementTXT = "$EJCONF/ejabberdctl.cfg";
+my $ConfigYaml = "$EJCONF/ejabberd.yml";
+my $MessageBoardTXT = "$EJCONF/MessageBoard.txt";
 
 ###################################################
 # No changes below here
 ###################################################
 
-my $MySettings = "$ENV{'HOME'}/.hmcmcrc";
+my $MySettings = "$ENV{'HOME'}/.ejmcrc";
 
-my $HMC_ver = "1.3";
+my $EJMC_ver = "1.0";
 my $Record = "false";	# Are results saved?
 my $TempDir = "/tmp";
 my $RobotName = "";
@@ -54,13 +54,13 @@ sub PrintDebugCommand
         my $entered = <STDIN>;
 }
 
-my $d = new UI::Dialog ( backtitle => "Hotline Management Console v$HMC_ver", height => 20, width => 65, listheight => 5,
+my $d = new UI::Dialog ( backtitle => "eJabberd Management Console v$EJMC_ver", height => 20, width => 65, listheight => 5,
 	order => [ 'ascii', 'cdialog', 'xdialog' ]);
 
-my $windowtitle = "Welcome to the Hotline Management Console!";
-my $enjoyedtitle = "We hope you enjoyed HMC!";
+my $windowtitle = "Welcome to the eJabberd Management Console!";
+my $enjoyedtitle = "We hope you enjoyed EJMC!";
 my $introtext =
-"This is the Hotline Management Console, a utility for Hotline operators
+"This is the eJabberd Management Console, a utility for eJabberd operators
 to manage their servers from a text UI rather than the command line.";
 
 $d->msgbox( title => $windowtitle, text => $introtext );
@@ -87,9 +87,9 @@ if (-f $MySettings)
 		{
 			$InitDName = $Setting;
 		}
-		if ($Command eq "hotlinedir")
+		if ($Command eq "ejconfdir")
 		{
-			$HOTLINEDIR = $Setting;
+			$EJCONF = $Setting;
 		}
 		if ($Command eq "backupcommand")
 		{
@@ -119,13 +119,13 @@ else
 	# Store defaults
 	open (my $FH, ">", $MySettings) or die "Could not create default file '$MySettings' $!";
 	print $FH "fileeditor=/bin/nano\n";
-	print $FH "initdname=/home/hotlineuser/bin/hotline\n";
-	print $FH "hotlinedir=/home/hotlineuser/HotlineFiles\n";
-	print $FH "backupcommand=/home/hotlineuser/HotlineBackup/hotlinebackup.pl\n";
+	print $FH "initdname=/opt/ejabberd-24.12/bin/ejabberdctl\n";
+	print $FH "ejconfdir=/opt/ejabberd/conf\n";
+	print $FH "backupcommand=/root/ejabberd-backup/ejabberdbackup.pl\n";
 	print $FH "pagercommand=/usr/bin/less\n";
-	print $FH "configyaml=$HOTLINEDIR/config.yaml\n";
-	print $FH "agreementtxt=$HOTLINEDIR/Agreement.txt\n";
-	print $FH "messageboardtxt=$HOTLINEDIR/MessageBoard.txt\n";
+	print $FH "configyaml=$EJCONF/ejabberd.yml\n";
+	print $FH "agreementtxt=$EJCONF/ejabberdctl.cfg\n";
+	print $FH "messageboardtxt=$EJCONF/MessageBoard.txt\n";
 	close($FH);
 }
 
@@ -133,7 +133,7 @@ my $menuselection = "";
 
 sub CheckServerStatus
 {
-	my $running=`ps ax|grep mobius-hotline-server|grep -v grep`;
+	my $running=`ps ax|grep ejabberdctl|grep -v grep`;
 	if ($running ne "")
 	{
 		$ServerStatus = "Running";
@@ -149,14 +149,14 @@ sub UpdateToolsMenu
 {
         my $WantRespawn="ON";
         CheckServerStatus();
-        if (-f "$HOTLINEDIR/nostart")
+        if (-f "$EJCONF/nostart")
         {
                 $WantRespawn="OFF";
         }
         $menuselection = $d->menu( title => "Update Tools Menu", text => "Server is $ServerStatus and respawn is $WantRespawn - Select one:",
-                            list => [ '1', 'Update HMC',
+                            list => [ '1', 'Update EJMC',
                                       '2', 'Update Backup',
-                                      '3', 'Update Startup',
+				      #'3', 'Update Startup',
                                       'q', 'Main Menu' ] );
 }
 
@@ -184,18 +184,18 @@ sub UpdateTools
                 elsif ($menuselection eq "1")
                 {
                         # Update HMC
-                        DoUpdate($HMCDir);
+                        DoUpdate($EJMCDir);
                 }
                 elsif ($menuselection eq "2")
                 {
                         # Update BackupToolDir
                         DoUpdate($BackupToolDir);
                 }
-                elsif ($menuselection eq "3")
-                {
-                        # Update Startup
-                        DoUpdate($StartupDir);
-                }
+		#elsif ($menuselection eq "3")
+		#{
+		#        # Update Startup
+		#        DoUpdate($StartupDir);
+		#}
         }
 }
 
@@ -203,7 +203,7 @@ sub MainMenu
 {
 	my $WantRespawn="ON";
 	CheckServerStatus();
-	if (-f "$HOTLINEDIR/nostart")
+	if (-f "$EJCONF/nostart")
 	{
 		$WantRespawn="OFF";
 	}
@@ -212,17 +212,17 @@ sub MainMenu
                             list => [ '1', 'Start Server',
                                       '2', 'Stop Server',
                                       '3', 'Server Console',
-                                      '4', 'Turn Off Respawn',
-                                      '5', 'Turn Respawn On',
-                                      '6', 'Edit config.yaml',
-                                      '7', 'Edit Agreement.txt',
+#                                      '4', 'Turn Off Respawn',
+#                                      '5', 'Turn Respawn On',
+                                      '6', 'Edit ejabberd.yml',
+                                      '7', 'Edit ejabberdctl.cfg',
                                       '8', 'Edit MessageBoard',
                                       '9', 'Run Backup',
-                                      '10', 'Run eMail Notice',
+#                                      '10', 'Run eMail Notice',
                                       '11', 'Edit Settings',
-                                      '12', 'Restart Hotline',
+                                      '12', 'Restart eJabberd',
                                       '13', 'Update Tools',
-                                      'q', 'Quit HMC' ] );
+                                      'q', 'Quit EJMC' ] );
 }
 
 while (-1)
@@ -230,7 +230,7 @@ while (-1)
 	MainMenu();
 	if (($menuselection eq "CANCEL") || ($menuselection eq "ESC") || ($menuselection eq "") || ($menuselection eq "q") || ($menuselection eq "Q"))
 	{
-		$d->msgbox( title => $enjoyedtitle, text => "Thanks for using HMC..." );
+		$d->msgbox( title => $enjoyedtitle, text => "Thanks for using EJMC..." );
 		exit 0;
 	}
 	if ($menuselection eq "1")
@@ -239,39 +239,39 @@ while (-1)
 	}
 	elsif ($menuselection eq "2")
 	{
-		if ($d->yesno( text => "Confirm stopping the server", text => "Are you sure you want to shut down the server?" ))
+		if ($d->yesno( text => "Confirm stopping the server", text => "Are you sure you want to stop the server?" ))
 		{
 			system("$InitDName stop");
 			sleep(5);
-			system("killall mobius-hotline-server");
+			#			system("killall mobius-hotline-server");
 		}
 	}
 	elsif ($menuselection eq "3")
 	{
-		$d->msgbox( text => "To exit the Hotline console and return to HMC press CTRL-A CTRL-D" );
-		system("screen -r Hotline");
+		$d->msgbox( text => "To exit the eJabberd console and return to EJMC press CTRL-G q" );
+		system("screen -r eJabberd");
 	}
-	elsif ($menuselection eq "4")
-	{
-		# Turn off respawn
-		system("touch $HOTLINEDIR/nostart");
-	}
-	elsif ($menuselection eq "5")
-	{
-		# Turn respawn back on
-		if (-f "$HOTLINEDIR/nostart")
-		{
-			unlink("$HOTLINEDIR/nostart");
-		}
-	}
+	#	elsif ($menuselection eq "4")
+	#	{
+	#		# Turn off respawn
+	#		system("touch $EJCONF/nostart");
+	#	}
+	#	elsif ($menuselection eq "5")
+	#	{
+	#		# Turn respawn back on
+	#		if (-f "$EJCONF/nostart")
+	#		{
+	#			unlink("$EJCONF/nostart");
+	#		}
+	#	}
 	elsif ($menuselection eq "6")
 	{
-		# Edit default.cfg file
+		# Edit Server config file
 		system("$FileEditor $ConfigYaml");
 	}
 	elsif ($menuselection eq "7")
 	{
-		# Edit Agreement.txt file
+		# Edit ejabberdctl.cfg
 		system("$FileEditor $AgreementTXT");
 	}
 	elsif ($menuselection eq "8")
@@ -287,14 +287,6 @@ while (-1)
 		print "Press Enter To Continue";
 		my $entered = <STDIN>;
 	}
-	elsif ($menuselection eq "10")
-	{
-		# Edit settings file
-		system("clear");
-		system("$DownloadEmail");
-		print "Press Enter To Continue";
-		my $entered = <STDIN>;
-	}
 	elsif ($menuselection eq "11")
 	{
 		# Run the download settings email
@@ -303,9 +295,8 @@ while (-1)
 	elsif ($menuselection eq "12")
 	{
 		# Reset server process
-		print "Killing Hotline Server Process\n";
-		system("killall mobius-hotline-server");
-		print "Process killed...";
+		print "Restartintg the Server Process\n";
+                system("$InitDName restart");
 		sleep(5);
 	}
 	elsif ($menuselection eq "13")
