@@ -212,16 +212,12 @@ sub MainMenu
                             list => [ '1', 'Start Server',
                                       '2', 'Stop Server',
                                       '3', 'Server Console',
-#                                      '4', 'Turn Off Respawn',
-#                                      '5', 'Turn Respawn On',
-                                      '6', 'Edit ejabberd.yml',
-                                      '7', 'Edit ejabberdctl.cfg',
-                                      '8', 'Edit MessageBoard',
-                                      '9', 'Run Backup',
-#                                      '10', 'Run eMail Notice',
-                                      '11', 'Edit Settings',
-                                      '12', 'Restart eJabberd',
-                                      '13', 'Update Tools',
+                                      '4', 'Edit ejabberd.yml',
+                                      '5', 'Edit ejabberdctl.cfg',
+                                      '6', 'Run Backup',
+                                      '7', 'Edit Settings',
+                                      '8', 'Restart eJabberd',
+                                      '9', 'Update Tools',
                                       'q', 'Quit EJMC' ] );
 }
 
@@ -264,22 +260,17 @@ while (-1)
 	#			unlink("$EJCONF/nostart");
 	#		}
 	#	}
-	elsif ($menuselection eq "6")
+	elsif ($menuselection eq "4")
 	{
 		# Edit Server config file
 		system("$FileEditor $ConfigYaml");
 	}
-	elsif ($menuselection eq "7")
+	elsif ($menuselection eq "5")
 	{
 		# Edit ejabberdctl.cfg
 		system("$FileEditor $AgreementTXT");
 	}
-	elsif ($menuselection eq "8")
-	{
-		# Edit MessageBoard.txt file
-		system("$FileEditor $MessageBoardTXT");
-	}
-	elsif ($menuselection eq "9")
+	elsif ($menuselection eq "6")
 	{
 		# Run a backup
 		system("clear");
@@ -287,19 +278,19 @@ while (-1)
 		print "Press Enter To Continue";
 		my $entered = <STDIN>;
 	}
-	elsif ($menuselection eq "11")
+	elsif ($menuselection eq "7")
 	{
 		# Run the download settings email
 		system("$FileEditor $MySettings");
 	}
-	elsif ($menuselection eq "12")
+	elsif ($menuselection eq "8")
 	{
 		# Reset server process
 		print "Restartintg the Server Process\n";
                 system("$InitDName restart");
 		sleep(5);
 	}
-	elsif ($menuselection eq "13")
+	elsif ($menuselection eq "9")
 	{
 		# Update tools menu
 		UpdateTools();
