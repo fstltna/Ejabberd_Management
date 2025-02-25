@@ -20,6 +20,7 @@ my $EJMCDir = "/root/HotlineManagement";
 #my $DownloadEmail = "$EJMCDir/DownloadedFiles";
 my $BackupToolDir = "/root/ejabberd-backup";
 #my $StartupDir = "/root/HotlineStartup";
+my $ConsoleCommand = "$InitDName ejabberdctl debug";
 
 my $DEBUG_MODE = "off";
 
@@ -156,7 +157,6 @@ sub UpdateToolsMenu
         $menuselection = $d->menu( title => "Update Tools Menu", text => "Server is $ServerStatus and respawn is $WantRespawn - Select one:",
                             list => [ '1', 'Update EJMC',
                                       '2', 'Update Backup',
-				      #'3', 'Update Startup',
                                       'q', 'Main Menu' ] );
 }
 
@@ -191,11 +191,6 @@ sub UpdateTools
                         # Update BackupToolDir
                         DoUpdate($BackupToolDir);
                 }
-		#elsif ($menuselection eq "3")
-		#{
-		#        # Update Startup
-		#        DoUpdate($StartupDir);
-		#}
         }
 }
 
@@ -244,22 +239,9 @@ while (-1)
 	}
 	elsif ($menuselection eq "3")
 	{
-		$d->msgbox( text => "To exit the eJabberd console and return to EJMC press CTRL-G q" );
-		system("screen -r eJabberd");
+		# $d->msgbox( text => "To exit the eJabberd console and return to EJMC press CTRL-G q" );
+		system("$ConsoleCommand");
 	}
-	#	elsif ($menuselection eq "4")
-	#	{
-	#		# Turn off respawn
-	#		system("touch $EJCONF/nostart");
-	#	}
-	#	elsif ($menuselection eq "5")
-	#	{
-	#		# Turn respawn back on
-	#		if (-f "$EJCONF/nostart")
-	#		{
-	#			unlink("$EJCONF/nostart");
-	#		}
-	#	}
 	elsif ($menuselection eq "4")
 	{
 		# Edit Server config file
