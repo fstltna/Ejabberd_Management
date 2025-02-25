@@ -121,7 +121,7 @@ else
 	print $FH "fileeditor=/bin/nano\n";
 	print $FH "initdname=/opt/ejabberd-24.12/bin/ejabberdctl\n";
 	print $FH "ejconfdir=/opt/ejabberd/conf\n";
-	print $FH "backupcommand=/root/ejabberd-backup/ejabberdbackup.pl\n";
+	print $FH "backupcommand=/root/ejabberd-backup/ejabberdbackup.pl -snapshot\n";
 	print $FH "pagercommand=/usr/bin/less\n";
 	print $FH "configyaml=$EJCONF/ejabberd.yml\n";
 	print $FH "agreementtxt=$EJCONF/ejabberdctl.cfg\n";
