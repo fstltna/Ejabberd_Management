@@ -20,7 +20,7 @@ my $EJMCDir = "/root/HotlineManagement";
 #my $DownloadEmail = "$EJMCDir/DownloadedFiles";
 my $BackupToolDir = "/root/ejabberd-backup";
 #my $StartupDir = "/root/HotlineStartup";
-my $ConsoleCommand = "$InitDName ejabberdctl debug";
+my $ConsoleCommand = "$InitDName debug";
 
 my $DEBUG_MODE = "off";
 
@@ -35,7 +35,7 @@ my $MessageBoardTXT = "$EJCONF/MessageBoard.txt";
 
 my $MySettings = "$ENV{'HOME'}/.ejmcrc";
 
-my $EJMC_ver = "1.0";
+my $EJMC_ver = "1.1";
 my $Record = "false";	# Are results saved?
 my $TempDir = "/tmp";
 my $RobotName = "";

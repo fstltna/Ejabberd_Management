@@ -1,4 +1,4 @@
-# eJabberd Management Console (1.0.0)
+# eJabberd Management Console (1.1.0)
 Allows you to manage your eJabberd server process with a text based UI
 
 ---
